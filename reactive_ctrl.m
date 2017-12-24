@@ -24,23 +24,18 @@ obj_next(14,:) = [14,10,99];
 obj_next(10,:) = [6,10,14];
 obj_next(6,:) = [2,6,10];
 obj_next(2,:) = [2,6,99];
-%keySet =   {14, 10, 6, 2};
-%valueSet = [[14,10], [6,10,14], [2,6,10], [2,6]];
-%ob_next = containers.Map(keySet,valueSet);
 dest_pose = zeros(3,N);
 init = false;
 init_dest_0 = d2c(0);
 init_dest_1 = d2c(14);
 si_barrier_certificate = create_si_barrier_certificate('SafetyRadius', 0.06);
-% Initialize x so that we don't run into problems later.  This isn't always
-% necessary
 for k = 0:1000000
   si_vel = zeros(2,N);
   x = r.get_poses();
   x_si = x(1:2, :);
   if ~init
-    dest_pose(:,0) = init_dest_0;
-    dest_pose(:,1) = init_dest_1;
+    dest_pose(:,1) = init_dest_0;
+    dest_pose(:,2) = init_dest_1;
     while(sum(init_checker(x,dest_pose))~=N)
       si_velocities = controller(x(1:2, :), dest_pose(1:2, :));
       si_velocities = si_barrier_certificate(si_velocities, x(1:2, :));
@@ -52,8 +47,8 @@ for k = 0:1000000
   else
     x = r.get_poses();
     x1 = x(1:2,1);
-    dest_pose(:,0) = d2c(move(c2d(x1)));
-    dest_pose(:,1) = d2c(random.choice(ob_next(c2d(x1))));
+    dest_pose(:,1) = d2c(move(c2d(x1)));
+    dest_pose(:,2) = d2c(random.choice(ob_next(c2d(x1))));
   end
 
   while (sum(init_checker(x,dest_pose))~=N)
@@ -63,11 +58,6 @@ for k = 0:1000000
       r.step();
   end
 end
-% Create a barrier certificate so that the robots don't collide
-%si_to_uni_dynamics = create_si_to_uni_mapping2();
-        
-%Get randomized initial conditions in the robotarium arena
-%initial_conditions = generate_initial_conditions(N, 'Width', r.boundaries(2)-r.boundaries(1)-0.1, 'Height', r.boundaries(4)-r.boundaries(3)-0.1, 'Spacing', 0.2);
 
 % We'll make the rotation error huge so that the initialization checker
 % doesn't care about it
