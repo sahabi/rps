@@ -182,20 +182,20 @@ class Grid(object):
         14: (0, 0),
         },
         ]
-    
+
     def move(self, o_state):
         try:
             table = self._table[self._state]
             newState,res = table[o_state]
             self._state = newState
             return res
-        
+
         except IndexError:
             raise Exception("Unrecognized internal state: " + str(self._state))
-        
+
         except Exception:
             self._error(o_state)
-    
+
     def _error(self, o_state):
         raise ValueError("Unrecognized input: " + ( "o_state = {o_state}; ").format( o_state=o_state))
 
@@ -232,11 +232,9 @@ def main():
     ctrl = Grid()
     ob_next = {14:[14,10],10:[6,10,14],6:[2,6,10],2:[2,6]}
     dests_0, dests_1 = ([],[])
-    dest_pose = np.zeros((3, N))
     # Instantiate Robotarium object
     r = robotarium.Robotarium(number_of_agents=N, show_figure=True, save_data=True, update_time=1)
     # This consensus algorithm uses single-integrator dynamics, so we'll need these mappings.
-    si_to_uni_dyn, si_to_uni_states = transformations.create_single_integrator_to_unicycle()
     init = False
     init_dest_0 = d2c(0)
     init_dest_1 = d2c(14)
@@ -264,7 +262,7 @@ def main():
             x1 = x[:2,1]
             dest_pose[:,0] = d2c(ctrl.move(c2d(x1)))
             dest_pose[:,1] = d2c(random.choice(ob_next[c2d(x1)]))
-         
+
         while (np.size(at_pose(x, dest_pose, rotation_error=100)) != N):
             si_velocities = single_integrator_position_controller(x_si
                 , dest_pose[:2, :], magnitude_limit=0.08)
