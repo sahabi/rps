@@ -29,6 +29,10 @@ init = false;
 init_dest_0 = d2c(0);
 init_dest_1 = d2c(14);
 si_barrier_certificate = create_si_barrier_certificate('SafetyRadius', 0.06);
+args = {'PositionError', 0.01, 'RotationError', 50};
+init_checker = create_is_initialized(args{:});
+controller = create_si_position_controller();
+si_to_uni_dynamics = create_si_to_uni_mapping2();
 for k = 0:1000000
   si_vel = zeros(2,N);
   x = r.get_poses();
@@ -42,6 +46,7 @@ for k = 0:1000000
       uni_velocities = si_to_uni_dynamics(si_velocities, x);
       r.set_velocities(1:N, uni_velocities);
       r.step();
+      x = r.get_poses();
     end
     init = true;
   else

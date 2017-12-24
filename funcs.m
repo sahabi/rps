@@ -18,11 +18,11 @@ function [array] = d2c(s);
   xwidth = cgrid_size(1)/dgrid_size(1);
   ywidth = cgrid_size(2)/dgrid_size(2);  
   x = (floor(mod(s, dgrid_size(1)))*xwidth) + (xwidth/2);
-  y = (floor(s / dgrid_size(2));
-  array = [x-1 y-1 0]i;
+  y = floor(s / dgrid_size(2));
+  array = [x-1 y-1 0];
 end
 
-function [action state] = move(cs, os)
+function [action, state] = move(cs, os)
   action = 1;
   state = 1;
 end
