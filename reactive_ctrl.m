@@ -9,26 +9,24 @@ cgrid_size = [2,2];
 xwidth = cgrid_size(1)/dgrid_size(1);
 ywidth = cgrid_size(2)/dgrid_size(2);
 
-% Get Robotarium object used to communicate with the robots/simulator
-rb = RobotariumBuilder();
-
 % Get the number of available agents from the Robotarium.  We don't need a
 % specific value for this algorithm
 N = 2;
-
-% Set the number of agents and whether we would like to save data.  Then,
-% build the Robotarium simulator object!
-r = rb.set_number_of_agents(N).set_save_data(false).build();
 obj_next = zeros(15,3);
 obj_next(14,:) = [14,10,99];
 obj_next(10,:) = [6,10,14];
 obj_next(6,:) = [2,6,10];
 obj_next(2,:) = [2,6,99];
-dest_pose = zeros(3,N);
+% Get Robotarium object used to communicate with the robots/simulator
+rb = RobotariumBuilder();
+% Set the number of agents and whether we would like to save data.  Then,
+% build the Robotarium simulator object!
+r = rb.set_number_of_agents(N).set_save_data(false).build();
 init = false;
 init_dest_0 = d2c(0);
 init_dest_1 = d2c(14);
 si_barrier_certificate = create_si_barrier_certificate('SafetyRadius', 0.06);
+dest_pose = zeros(3,N);
 args = {'PositionError', 0.01, 'RotationError', 50};
 init_checker = create_is_initialized(args{:});
 controller = create_si_position_controller();
@@ -51,7 +49,7 @@ for k = 0:1000000
     init = true;
   else
     x = r.get_poses();
-    x1 = x(1:2,1);
+    x1 = x(1:2,2);
     dest_pose(:,1) = d2c(move(c2d(x1)));
     dest_pose(:,2) = d2c(random.choice(ob_next(c2d(x1))));
   end
@@ -61,6 +59,7 @@ for k = 0:1000000
       uni_velocities = si_to_uni_dynamics(si_velocities, x);
       r.set_velocities(1:N, uni_velocities);
       r.step();
+      x = r.get_poses();
   end
 end
 
