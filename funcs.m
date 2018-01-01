@@ -23,6 +23,6 @@ function [array] = d2c(s);
 end
 
 function [action, state] = move(cs, os)
-  action = 1;
-  state = 1;
+  action = 5;
+  state = 5;
 end
