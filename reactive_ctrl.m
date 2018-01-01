@@ -36,14 +36,16 @@ for k = 0:1000000
       x = r.get_poses();
       dest_pose(3,:) = x(3,:);
     end
+    cs = 36;
+    dir = 0;
     init = true;
   else
-    x1 = x(1:2,2);
-    dest_pose(:,1) = d2c(move(c2d(x1)));
-    x2 = x(1:2,1);
-    rs = randsample(ob_next(c2d(x2)),1);
-    dest_pose(:,2) = d2c(rs);
-    randsample(ob_next(c2d(x1)),1);
+    x1 = x(1:2,1);
+    x2 = x(1:2,2);
+    [cs, cmd] = move(c2d(x2),cs,c2d(x1));
+    dest_pose(:,1) = d2c(cmd);
+    [next, dir] = ob_next(c2d(x2),dir);
+    dest_pose(:,2) = d2c(randsample(next,1));
     dest_pose(3,:) = x(3,:);
   end
   while (~init_checker(x,dest_pose))
@@ -55,5 +57,3 @@ for k = 0:1000000
   end
 end
 r.call_at_scripts_end();
-
-
